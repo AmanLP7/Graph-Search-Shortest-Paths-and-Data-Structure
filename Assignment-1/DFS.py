@@ -43,16 +43,15 @@ class graph:
 
             # Check if the element has been visited or not
             if visited[v-1] == False:
-                if v != None:
-                    print(v, stack, visited)
-                    visited[v-1] = True
+                print(v)
+                visited[v-1] = True
 
             # Get all the adjacent vertices for the popped node
             # and check if it has been visited or not, if not
             # then append it to the stack
             for node in self.adj[v]:
                 if visited[node-1] == False:
-                    stack.append(node)
+                    print(self.adj[v])
 
 
 if __name__ == "__main__":
@@ -64,7 +63,7 @@ if __name__ == "__main__":
     G.addEdge(1, 4)  
     G.addEdge(2, 5)  
 
-    print(G.DFS(3))
+    G.DFS(3)
   
 
 
