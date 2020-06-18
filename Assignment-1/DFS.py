@@ -51,7 +51,7 @@ class graph:
             # then append it to the stack
             for node in self.adj[v]:
                 if visited[node-1] == False:
-                    print(self.adj[v])
+                    stack.append(node)
 
 
 if __name__ == "__main__":
