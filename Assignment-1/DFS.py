@@ -53,6 +53,29 @@ class graph:
                 if visited[node-1] == False:
                     stack.append(node)
 
+    # Function to print graph as an
+    # adjacency list
+    def showGraph(self):
+        return(self.adj)
+
+    # Function to reverse a graph
+    '''
+    Input: Takes adjacency list as input
+    Output: Returns reverse of the graph
+    '''
+    def getReverse(self):
+        revGraph = graph(self.numVertices)
+
+        # Reverse the graph
+        for key in self.adj.keys():
+            for value in self.adj[key]:
+                revGraph.addEdge(value, key)
+        
+        return revGraph.showGraph()
+
+
+
+
 
 if __name__ == "__main__":
 
@@ -64,6 +87,11 @@ if __name__ == "__main__":
     G.addEdge(2, 5)  
 
     G.DFS(3)
+
+    print(f"\noriginal graph = {G.showGraph()}\n")
+
+    print(f"reversed graph = {G.getReverse()}\n")
+
   
 
 
