@@ -40,7 +40,7 @@ class graph:
         while len(stack) > 0:
             # Pop an element from the stack
             v = stack.pop()
-
+            
             # Check if the element has been visited or not
             if visited[v-1] == False:
                 print(v)
