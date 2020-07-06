@@ -51,7 +51,7 @@ class minimumHeap():
     Output: Whether or not the node is a leaf node
     '''
     def isLeaf(self, position):
-        if position >= (self.size//2) and position <= self.size:
+        if position > (self.size//2) and position <= self.size:
             return True
         return False
 
@@ -62,7 +62,7 @@ class minimumHeap():
     Output: None
     '''
     def swap(self, first, second):
-        self.heap[first], self.heap
+        self.heap[first], self.heap[second] = self.heap[second], self.heap[first]
 
 
     # Function to heapify the node at position
@@ -110,7 +110,11 @@ class minimumHeap():
     # Function to print contents of the heap
     def printHeap(self):
         for i in range(1, (self.size//2)+1):
-            print(f"PARENT : {self.heap[i]} LEFT CHILD : {self.heap[2*i]} RIGHT CHILD : {self.heap[2*i + 1]}")
+            if (2*i+1) <= self.size:
+                print(f"PARENT : {self.heap[i]} LEFT CHILD : {self.heap[2*i]} RIGHT CHILD : {self.heap[2*i + 1]}")
+            else:
+                print(f"PARENT : {self.heap[i]} LEFT CHILD : {self.heap[2*i]}")
+
 
 
     # Function to build minimum heap using minHeapify function
@@ -135,6 +139,7 @@ class minimumHeap():
 if __name__ == "__main__":
 
     print("\nThe minimum heap is .....\n")
+
     heap1 = minimumHeap(15)
     heap1.insertElement(5) 
     heap1.insertElement(3) 
@@ -147,6 +152,8 @@ if __name__ == "__main__":
     heap1.insertElement(9) 
     heap1.buildMinHeap()
     heap1.printHeap()
+
+    print(f"\nThe minimum element is {heap1.removeMinElement()}.\n")
 
 
 
