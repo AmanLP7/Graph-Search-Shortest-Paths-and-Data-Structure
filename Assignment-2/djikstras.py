@@ -8,11 +8,13 @@ from collections import defaultdict
 # Class to implement heap data structure
 class Heap():
 
-    # Function to initiialise heap data structure
-    def __init__(self):
-        self.array = []
+    # Function to initialise heap data structure
+    def __init__(self, numVertices):
+        self.array = [(-1, -float("inf"))]
+        self.maxSize = numVertices 
         self.size = 0
-        self.location = []
+        self.FRONT = 1
+        self.location = [None]
 
     # Function to define new node in a minimum heap
     '''
@@ -38,15 +40,15 @@ class Heap():
     def minHeapify(self, position):
 
         parent = position
-        leftChild = 2*parent + 1
-        rightChild = 2*parent + 2
+        leftChild = 2*parent
+        rightChild = 2*parent + 1
 
         # Swap with the left child if less than parent and exists
-        if (leftChild < self.size) and (self.array[leftChild][1] < self.array[parent][1]):
+        if (leftChild <= self.size) and (self.array[leftChild][1] < self.array[parent][1]):
             parent = leftChild
         
         # Swap with right child if less than parent and exists
-        if (rightChild < self.size) and (self.array[rightChild][1] < self.array[parent][1]):
+        if (rightChild <= self.size) and (self.array[rightChild][1] < self.array[parent][1]):
             parent = rightChild
 
         # If original positions were changed
@@ -73,19 +75,19 @@ class Heap():
             return
 
         # Store root node
-        root = self.array[0]
+        root = self.array[self.FRONT]
 
         # Replace root node with the last node
-        lastNode = self.array[self.size - 1]
-        self.array[0] = lastNode
+        lastNode = self.array[self.size]
+        self.array[self.FRONT] = lastNode
 
         # Update position of the last node
-        self.location[lastNode[0]] = 0
-        self.location[root[0]] = self.size - 1
+        self.location[lastNode[0]] = self.FRONT
+        self.location[root[0]] = self.size
 
         # Reduce heap size and heapify root
         self.size -= 1
-        self.minHeapify(0)
+        self.minHeapify(self.FRONT)
 
         return root
 
@@ -102,12 +104,12 @@ class Heap():
         self.array[position][1] = distance
 
         # Travel up while the complete tree is not heapified [O(logn)]
-        while position > 0 and self.array[position][1] < self.array[(position-1) // 2][1]:
+        while position > 1 and self.array[position][1] < self.array[position // 2][1]:
             # Swap node and it's position with its parent
-            self.location[self.array[position][0]] = (position-1) // 2
-            self.location[self.array[(position-1)//2][0]] = position
-            self.swapNodes(position, (position-1)//2)
-            position = (position-1)//2
+            self.location[self.array[position][0]] = position // 2
+            self.location[self.array[position//2][0]] = position
+            self.swapNodes(position, position//2)
+            position = position//2
 
     # Function to check if a vertex is in minimum heap or not
     '''
@@ -115,7 +117,7 @@ class Heap():
     Output: Boolean - True or False
     '''
     def isInHeap(self, vertex):
-        if self.location[vertex] < self.size:
+        if self.location[vertex] <= self.size:
             return True
         else:
             return False
@@ -150,18 +152,18 @@ class Graph():
     '''
     def djikstra(self, source):
         vertices = self.vertices
-        distances = []
+        distances = [None]
 
-        minimumHeap = Heap()
+        minimumHeap = Heap(self.vertices)
 
         # Intialising minimum heap with all the edges and their distances
-        for vertex in range(vertices):
+        for vertex in range(1, vertices+1):
             distances.append(float("inf"))
             minimumHeap.array.append(minimumHeap.minNewHeapNode(vertex, distances[vertex]))
             minimumHeap.location.append(vertex)
 
         # Make distance value of source vertex as 0 so that it is processed first
-        minimumHeap.location[source] = 0
+        minimumHeap.location[source] = minimumHeap.FRONT
         distances[source] = 0
         minimumHeap.decreaseKey(source, distances[source])
 
@@ -203,20 +205,18 @@ class Graph():
 
 if __name__ == "__main__":
 
-    graph = Graph(9)
-    # graph.getInput("Djikstras.txt")
-    graph.graph[0] =  [[1,4], [7,8]] 
-    graph.graph[1] =  [[2,8], [7,11]]    
-    graph.graph[2] =  [[3,7], [8,2], [5,4]] 
-    graph.graph[3] =  [[4,9], [5,14]]          
-    graph.graph[4] =  [[5,10]]    
-    graph.graph[5] =  [[6,2]] 
-    graph.graph[6] =  [[7,1], [8,6]] 
-    graph.graph[7] =  [[8,7]]
-    d = graph.djikstra(0)
+    graph = Graph(200)
+    graph.getInput("djikstras.txt")
 
-    for i, j in enumerate(d):
-        print(i,j)
+    answers = []
+    for key in [7,37,59,82,99,115,133,165,188,197]:
+        answers.append(graph.djikstra(1)[key])
+
+    print("\n",",".join(map(str, answers)),"\n")
+    
+    
+
+    
 
     
 
