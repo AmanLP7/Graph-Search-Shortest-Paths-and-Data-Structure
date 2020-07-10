@@ -1,160 +1,136 @@
-#####--------------------------- Djikstra's algorithm ---------------------------#####
+##-------------------------------------- Djisktra's algorithm using minimum heap ---------------------------------##
+
+# Thanks to - https://www.geeksforgeeks.org/dijkstras-algorithm-for-adjacency-list-representation-greedy-algo-8/
 
 # Importing required modules
-import sys
 from collections import defaultdict
 
+# Class to implement heap data structure
+class Heap():
 
-# Class to create a heap data structure
-class minimumHeap():
-
-    # Initialising class variables
-    def __init__(self, maxSize):
-        self.maxSize = maxSize
+    # Function to initiialise heap data structure
+    def __init__(self):
+        self.array = []
         self.size = 0
-        self.heap = [0]*(self.maxSize + 1)
-        self.heap[0] = {"element": 0,"weight": -1*sys.maxsize}
-        self.vertexPosition = defaultdict(None)
-        self.FRONT = 1
+        self.location = []
 
-
-    # Function to return the position of parent node of node 
-    # currently at given position
+    # Function to define new node in a minimum heap
     '''
-    Input: Position of the current node
-    Output: Returns parent node position
+    Input: Vertex, distance
+    Output: New node as a list containing vertex and distance
     '''
-    def parent(self, position):
-        return position // 2
+    def minNewHeapNode(self, vertex, distance):
+        minHeapNode = [vertex, distance]
+        return minHeapNode
 
-
-    # Function to return the position of left child 
-    # of the node at given position
+    # Function to swap nodes
     '''
-    Input: Position of the current node
-    Output: Position of the left child
+    Input: Position for which element are to be swapped
     '''
-    def leftChild(self, position):
-        return 2*position
+    def swapNodes(self, first, second):
+        self.array[first], self.array[second] = self.array[second], self.array[first]
 
-
-    # Function to return the position of right child 
-    # of the node at given position
+    # Function to maintain minmum heap invariant in the heap for given position
+    # also updates the new positions of the elements in the position array
     '''
-    Input: Position of the current node
-    Output: Position of the right child
-    '''
-    def rightChild(self, position):
-        return (2*position) + 1
-
-
-    # Function that return true if passed node 
-    # is the leaf node
-    '''
-    Input: Position of the node
-    Output: Whether or not the node is a leaf node
-    '''
-    def isLeaf(self, position):
-        if position > (self.size//2) and position <= self.size:
-            return True
-        return False
-
-
-    # Function to swap two nodes of the heap
-    '''
-    Input: Position of the nodes
-    Output: None
-    '''
-    def swap(self, first, second):
-        self.heap[first], self.heap[second] = self.heap[second], self.heap[first]
-
-
-    # Function to heapify the node at position
-    '''
-    Input: Postion of the node
-    Output: Return new minimum heap
+    Input: Position to be heapified
     '''
     def minHeapify(self, position):
 
-        # If the node is non-leaf node and greater than any of its children
-        if not self.isLeaf(position):
-            if (
-                (self.heap[position]["weight"] > self.heap[self.leftChild(position)]["weight"]) or 
-                (self.heap[position]["weight"] > self.heap[self.rightChild(position)]["weight"])
-                ): 
+        parent = position
+        leftChild = 2*parent + 1
+        rightChild = 2*parent + 2
 
-                # Swap with left child and heapify the left child
-                if self.heap[self.leftChild(position)]["weight"] < self.heap[self.rightChild(position)]["weight"]:
-                    self.swap(position, self.leftChild(position))
-                    self.minHeapify(self.leftChild(position))
+        # Swap with the left child if less than parent and exists
+        if (leftChild < self.size) and (self.array[leftChild][1] < self.array[parent][1]):
+            parent = leftChild
+        
+        # Swap with right child if less than parent and exists
+        if (rightChild < self.size) and (self.array[rightChild][1] < self.array[parent][1]):
+            parent = rightChild
 
-                # Swap with the right child and heapify the right child
-                else:
-                    self.swap(position, self.rightChild(position))
-                    self.minHeapify(self.rightChild(position))
+        # If original positions were changed
+        if parent != position:
+            # Swap positions
+            self.location[self.array[parent][0]] = position
+            self.location[self.array[position][0]] = parent
+            # Swap nodes
+            self.swapNodes(position, parent)
+            self.minHeapify(parent)
 
+    # Function to check if the heap is empty is not
+    def isEmpty(self):
+        if self.size == 0:
+            return True
+        else:
+            return False
 
-    # Function to insert new node in the heap
-    '''
-    Input: Element to be inserted
-    '''
-    def insertElement(self, element, weight):
+    # Function to extract minimum node from the heap
+    def extractMinimum(self):
 
-        if self.size > self.maxSize:
+        # Return null if heap is empty
+        if self.isEmpty() == True:
             return
-        self.size += 1
-        self.heap[self.size] = {"element": element, "weight": weight}
-        currentPosition = self.size
-        self.vertexPosition[element] = currentPosition # Position of current element in the heap
 
-        while self.heap[currentPosition]["weight"] < self.heap[self.parent(currentPosition)]["weight"]:
-            self.vertexPosition[self.heap[self.parent(currentPosition)]["element"]] = currentPosition
-            self.swap(currentPosition, self.parent(currentPosition))
-            currentPosition = self.parent(currentPosition)
-            self.vertexPosition[element] = currentPosition
+        # Store root node
+        root = self.array[0]
 
+        # Replace root node with the last node
+        lastNode = self.array[self.size - 1]
+        self.array[0] = lastNode
 
-    # Function to print contents of the heap
-    def printHeap(self):
-        for i in range(1, (self.size//2)+1):
-            if (2*i+1) <= self.size:
-                print(f"PARENT : {self.heap[i]} LEFT CHILD : {self.heap[2*i]} RIGHT CHILD : {self.heap[2*i + 1]}")
-            else:
-                print(f"PARENT : {self.heap[i]} LEFT CHILD : {self.heap[2*i]}")
+        # Update position of the last node
+        self.location[lastNode[0]] = 0
+        self.location[root[0]] = self.size - 1
 
-
-
-    # Function to build minimum heap using minHeapify function
-    def buildMinHeap(self):
-        for position in range(self.size//2, 0, -1):
-            self.minHeapify(position)
-
-    
-    # Function to remove and return the minimum element from the heap
-    def removeMinElement(self):
-        minElement = self.heap[self.FRONT]
-        self.heap[self.FRONT] = self.heap[self.size]
+        # Reduce heap size and heapify root
         self.size -= 1
-        self.minHeapify(self.FRONT)
+        self.minHeapify(0)
 
-        return minElement
+        return root
+
+    # Function to decrease the key of elements in heap
+    '''
+    Input: Vertex and distance
+    '''
+    def decreaseKey(self, vertex, distance):
+
+        # Get the position of vertex in heap
+        position = self.location[vertex]
+
+        # Get the node and update its distance value
+        self.array[position][1] = distance
+
+        # Travel up while the complete tree is not heapified [O(logn)]
+        while position > 0 and self.array[position][1] < self.array[(position-1) // 2][1]:
+            # Swap node and it's position with its parent
+            self.location[self.array[position][0]] = (position-1) // 2
+            self.location[self.array[(position-1)//2][0]] = position
+            self.swapNodes(position, (position-1)//2)
+            position = (position-1)//2
+
+    # Function to check if a vertex is in minimum heap or not
+    '''
+    Input: Vertex to be checked
+    Output: Boolean - True or False
+    '''
+    def isInHeap(self, vertex):
+        if self.location[vertex] < self.size:
+            return True
+        else:
+            return False
 
 
 
-# Class containing all the function to implement dijkstra's algorithm
-class djikstrasAlgorithm():
-
-    # Function to initialise parameters for heap and graph
+# Class to create graph and implement djikstra's algorithm
+class Graph():
+    
+    # Function to initialise values for graph
     def __init__(self, numVertices):
         self.vertices = numVertices
-        self.graph = [0]*(self.vertices + 1)
-        self.color = ["red"]*(self.vertices + 1) # green = visited, red = not visited
-        self.priorityQueue = minimumHeap(numVertices)
-        self.source = None
-        self.distanceFromSource = [-1*sys.maxsize]*(self.vertices + 1)
+        self.graph = defaultdict(list)
 
-
-    # Function to get data from the filename
+    # Function to get data from the file
     '''
     Input: File containing data
     Output: Populates the graph array
@@ -163,67 +139,97 @@ class djikstrasAlgorithm():
         with open(filename, 'r') as data:
             for line in data:
                 arr = [x for x in line.split("\t") if x != "\n"]
-                index = int(arr[0])
+                key = int(arr[0])
                 elements = list(map(lambda x: x.split(","), arr[1:]))
-                self.graph[index] = [list(map(int,x)) for x in elements]
+                self.graph[key] = [list(map(int,x)) for x in elements]
 
-
-    # Function to input initialise heap with vertex 
-    # where intial weight is infinity
+    # Function to calculate shortest distance using djikstra's algorithm
     '''
-    Input: Vertices of graph and intial weights as infinity
-    Output: Initialised heap with weights set to infinity for all elements
+    Input: Source vertex
+    Ouptut: Distance from source vertex to every vertex
     '''
-    def intialiseHeap(self):
-        for vertex in range(1, self.vertices + 1):
-            if vertex == self.source:
-                self.priorityQueue.insertElement(vertex, 0)
-            else:
-                self.priorityQueue.insertElement(vertex, sys.maxsize)
+    def djikstra(self, source):
+        vertices = self.vertices
+        distances = []
+
+        minimumHeap = Heap()
+
+        # Intialising minimum heap with all the edges and their distances
+        for vertex in range(vertices):
+            distances.append(float("inf"))
+            minimumHeap.array.append(minimumHeap.minNewHeapNode(vertex, distances[vertex]))
+            minimumHeap.location.append(vertex)
+
+        # Make distance value of source vertex as 0 so that it is processed first
+        minimumHeap.location[source] = 0
+        distances[source] = 0
+        minimumHeap.decreaseKey(source, distances[source])
+
+        # Initialise size of minimum heap
+        minimumHeap.size = vertices
+
+        # Following loop minimum heap contains all the nodes whose distance
+        # is not yet finalised
+        while minimumHeap.isEmpty() == False:
+
+            # Extract the vertex with minimum distance value
+            newHeapNode = minimumHeap.extractMinimum()
+            element = newHeapNode[0]
+
+            # Traverse through all the adjacent nodes and update their distances
+            for node in self.graph[element]:
+                adjacentNode = node[0]
+
+                # If node is still in heap and distance to adjacent node from the element
+                # is less than its previously calculated distance
+                if (
+                    (minimumHeap.isInHeap(adjacentNode) and distances[element] != float("inf")) and
+                    ((node[1] + distances[element]) < distances[adjacentNode])
+                ):
+                    distances[adjacentNode] = node[1] + distances[element]
+
+                    # Update distance value in heap
+                    minimumHeap.decreaseKey(adjacentNode, distances[adjacentNode])
+
+        return distances
 
 
-    # Function to find vertex at least distance from source vertex
-    def findGreedyDistance(self, destinationVertex):
-        minimumElement = self.priorityQueue.removeMinElement()
-        self.distanceFromSource[minimumElement["element"]] = minimumElement["weight"]
-        self.color[minimumElement["element"]] = "green" # Visited
-        for node in self.graph[self.source]:
-            if self.color[node[0]] != "green":
-                posistionInHeap = self.priorityQueue.vertexPosition[node[0]]
-                combinedDistance = 
-                if combinedDistance > self.dis
-            
-
-    
-        
-
-        
 
 
 
 
-
-##--------------------------------------------------------------------------------------
-
-
-
+## ---------------------------------------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
 
+    graph = Graph(9)
+    # graph.getInput("Djikstras.txt")
+    graph.graph[0] =  [[1,4], [7,8]] 
+    graph.graph[1] =  [[2,8], [7,11]]    
+    graph.graph[2] =  [[3,7], [8,2], [5,4]] 
+    graph.graph[3] =  [[4,9], [5,14]]          
+    graph.graph[4] =  [[5,10]]    
+    graph.graph[5] =  [[6,2]] 
+    graph.graph[6] =  [[7,1], [8,6]] 
+    graph.graph[7] =  [[8,7]]
+    d = graph.djikstra(0)
 
-    # Importing the data
-    algo = djikstrasAlgorithm(int(input("Enter the number of vertices: ")))
-    algo.getInput("djikstras.txt")
-    print(algo.graph[6])
-    # algo.source = 78
-    # algo.intialiseHeap()
-    # algo.priorityQueue.printHeap()
-    # print(f"\nThe minimum element is = {algo.priorityQueue.removeMinElement()}.\n")
-    # print(algo.priorityQueue.vertexPosition)
+    for i, j in enumerate(d):
+        print(i,j)
 
+    
+
+
+
+
+
+
+        
 
 
 
 
     
+
+
