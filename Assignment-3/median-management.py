@@ -37,6 +37,7 @@ class minimumHeap():
         while self.heap[currentPosition] < self.heap[parent]:
             self.swapNodes(currentPosition, parent)
             currentPosition = parent
+            parent = currentPosition // 2
 
     
 
@@ -101,6 +102,15 @@ if __name__ == "__main__":
         print(i)
         Hlow.insertNode(i)
     print(Hlow.heap)
+    print(Hlow.extractMinimum())
+    print(Hlow.extractMinimum())
+    print(Hlow.extractMinimum())
+    print(Hlow.extractMinimum())
+    print(Hlow.extractMinimum())
+    print(Hlow.extractMinimum())
+    print(Hlow.extractMinimum())
+    print(Hlow.extractMinimum())
+    print(Hlow.heap, Hlow.size)
 
 
    
