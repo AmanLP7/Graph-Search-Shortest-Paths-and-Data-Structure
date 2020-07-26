@@ -1,5 +1,7 @@
 ##--------------------- Program to implement median management using heap --------------------##
 
+from datetime import datetime
+
 # Class implementing heap data structure which supports extracting minimum element
 # in O(logn) time
 class minimumHeap():
@@ -92,26 +94,84 @@ class minimumHeap():
 
         return root
 
-##------------------------------------------------------------------------------------------------------------------------------------
+
+
+##------------------------------------------------------------------------------------------------------------------------
+
+# Class to implement median management using heaps
+class medianManagement:
+
+    # Function to intialise variables for the class
+    def __init__(self, length):
+        self.length = length
+        self.highHeap = minimumHeap(length)
+        self.lowHeap = minimumHeap(length)
+        self.data = []
+
+    # Function read input file as a stream of numbers
+    '''
+    Input: Filename
+    Output: Data as list
+    '''
+    def inputData(self, filename = "median.txt"):
+        with open(filename, "r") as file:
+            for line in file:
+                self.data.append(int(line.strip("\n")))
+        return self.data
+
+    # Function to find median of set of numbers after each iteration
+    '''
+    Input: Data
+    Output: sum of median at each step modulo 10000
+    '''
+    def findMedian(self, filename = "test.txt"):
+
+        numbers = self.inputData(filename)
+        medians = 0
+        FRONT = 1
+
+        for number in numbers:
+
+            # If both the heaps are balanced
+            if abs(self.highHeap.size - self.lowHeap.size) <= 2:
+                if (number > -(self.lowHeap.heap[FRONT])) and (number > self.highHeap.heap[FRONT]):
+                    self.highHeap.insertNode(number)
+                elif (number > -self.lowHeap.heap[FRONT]) and (number < self.highHeap.heap[FRONT]):
+                    self.lowHeap.insertNode(-number)
+                else:
+                    self.lowHeap.insertNode(-number)
+            
+                while abs(self.highHeap.size - self.lowHeap.size) > 1:
+                    if self.lowHeap.size < self.highHeap.size:
+                        element = self.highHeap.extractMinimum()
+                        self.lowHeap.insertNode((-1)*element)
+                    elif self.lowHeap.size > self.highHeap.size:
+                        element = self.lowHeap.extractMinimum()
+                        self.highHeap.insertNode((-1)*element)
+
+                if self.highHeap.size > self.lowHeap.size:
+                    medians += self.highHeap.heap[FRONT]
+                else:
+                    medians += (-1)*self.lowHeap.heap[FRONT]
+
+        
+        return(f"median -> {medians % 10000}")
+
+
+
+
+
+
+##------------------------------------------------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
 
-    Hlow = minimumHeap(10)
-    for i in range(10,0,-1):
-        print(i)
-        Hlow.insertNode(i)
-    print(Hlow.heap)
-    print(Hlow.extractMinimum())
-    print(Hlow.extractMinimum())
-    print(Hlow.extractMinimum())
-    print(Hlow.extractMinimum())
-    print(Hlow.extractMinimum())
-    print(Hlow.extractMinimum())
-    print(Hlow.extractMinimum())
-    print(Hlow.extractMinimum())
-    print(Hlow.heap, Hlow.size)
-
+    median = medianManagement(10000)
+    frames = median.findMedian(filename="median.txt")
+    start = datetime.now()
+    print("\n",frames)
+    print(f"\nTotal time taken = {datetime.now()-start}\n")
 
    
    
