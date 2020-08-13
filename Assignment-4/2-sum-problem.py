@@ -15,12 +15,13 @@ class twoSum:
     # Function to import data from text file
     '''
     Input: Text file containing data
-    Output: array of input data
+    Output: array of sorted input data
     '''
     def importData(self, filename):
         with open(filename,"r") as file:
             for line in file:
                 self.data.append(int(line.strip('\n')))
+                self.data.sort()
 
 
     # Function to implement binary search
@@ -28,7 +29,7 @@ class twoSum:
     Input: Key to look for
     Output: Index or False if element is not found in the array
     '''
-    def binarySearch(self, key):
+    def binaryIntervalSearch(self, key, bound = "upper"):
         low = 0
         high = len(self.data)-1
         middle = 0
@@ -44,7 +45,11 @@ class twoSum:
             else:
                 return middle
 
-        return False
+        # Returning intervals if key not found
+        if bound == "upper":
+            return max(low,0)
+        elif bound == "lower":
+            return max(high,0)
         
 
 
@@ -55,18 +60,13 @@ class twoSum:
     Output: Pair of numbers
     '''
     def checkSum(self):
-
-        # Populating the hash table where key is the number in the array and 
-        # index is the corresponding value
-        for index, x in enumerate(self.data):
-            self.sumDict[x] = index
         
         for x in self.data:
-            for number in range(-10000,10001):
-                if (number-x) in self.sumDict:
-                    self.pairs += 1
-        
-        return (self.pairs // 2)
+            upper = self.binaryIntervalSearch(-10000-x, "upper")
+            lower = self.binaryIntervalSearch(10000-x, "lower")
+            print(f"upper bound for {-10000-x} = {upper}, lower bound for {10000-x} = {lower}\n")
+            break
+
 
 
 
@@ -76,5 +76,5 @@ if __name__ == "__main__":
     algorithm = twoSum()
     algorithm.importData("test.txt")
     start = datetime.now()
-    print(algorithm.checkSum())
-    print(f"Total time taken = {datetime.now()-start}.")
+    print("\n",algorithm.data,"\n")
+    algorithm.checkSum()
