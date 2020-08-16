@@ -60,12 +60,24 @@ class twoSum:
     Output: Pair of numbers
     '''
     def checkSum(self):
+
+        validSum = set()
         
-        for x in self.data:
+        for index, x in enumerate(self.data,1):
             upper = self.binaryIntervalSearch(-10000-x, "upper")
             lower = self.binaryIntervalSearch(10000-x, "lower")
-            print(f"upper bound for {-10000-x} = {upper}, lower bound for {10000-x} = {lower}\n")
-            break
+
+            if upper == lower:
+                arr = [self.data[upper]]
+            else:
+                arr = self.data[min(upper, lower): max(upper,lower)+1]
+
+            arr = [x + y for y in arr]
+
+            for element in arr:
+                if element >= -10000 and element <= 10000:
+                    validSum.add(element)
+        print(f"\nLength of the set = {len(validSum)}")
 
 
 
@@ -76,5 +88,6 @@ if __name__ == "__main__":
     algorithm = twoSum()
     algorithm.importData("test.txt")
     start = datetime.now()
-    print("\n",algorithm.data,"\n")
+    # print("\n",algorithm.data,"\n")
     algorithm.checkSum()
+    print(f"\nTotal time taken = {datetime.now() - start}.\n")
