@@ -21,7 +21,10 @@ class twoSum:
         with open(filename,"r") as file:
             for line in file:
                 self.data.append(int(line.strip('\n')))
-                self.data.sort()
+
+        start = datetime.now()
+        self.data.sort()
+        print(f"Time taken to sort input data = {datetime.now()-start}.")
 
 
     # Function to implement binary search
@@ -63,6 +66,7 @@ class twoSum:
 
         validSum = set()
         
+        start = datetime.now()
         for index, x in enumerate(self.data,1):
             upper = self.binaryIntervalSearch(-10000-x, "upper")
             lower = self.binaryIntervalSearch(10000-x, "lower")
@@ -77,6 +81,7 @@ class twoSum:
             for element in arr:
                 if element >= -10000 and element <= 10000:
                     validSum.add(element)
+        print(f"Time taken to calculate valid sums = {datetime.now()-start}.")
         print(f"\nLength of the set = {len(validSum)}")
 
 
@@ -86,7 +91,7 @@ class twoSum:
 if __name__ == "__main__":
 
     algorithm = twoSum()
-    algorithm.importData("test.txt")
+    algorithm.importData("2sum.txt")
     start = datetime.now()
     # print("\n",algorithm.data,"\n")
     algorithm.checkSum()
